@@ -1,6 +1,7 @@
 
 import pandas as pd
 import os
+import joblib
 import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
@@ -122,13 +123,15 @@ def train_log_model(model , params , X_train, y_train , X_val, y_val, model_name
 def main():
     os.environ["LOGNAME"] = "Zad"
     output_dir = "output"
-    ### Set the tracking URI for MLflow
-    mlflow.set_tracking_uri("http://localhost:5000")
-    ### Set the experiment name
-    mlflow.set_experiment("_Hand_Gesture_Classification_")
+    os.makedirs(output_dir, exist_ok=True)
 
-    ### Load the data
-    df = load_data("dataset\hand_landmarks_data.csv")
+    # Set the tracking URI for MLflow
+    mlflow.set_tracking_uri("http://localhost:5000")
+    # Set the experiment name
+    mlflow.set_experiment("_Hand_Gesture_Classification_2")
+
+    # Load and preprocess the data
+    df = load_data("dataset/hand_landmarks_data.csv")
     df, le = preprocess_data(df)
     df = normalize_landmarks(df)
     X_train, X_val, X_test, y_train, y_val, y_test = split_data(df)
@@ -151,10 +154,24 @@ def main():
         })
     }
 
+    best_acc = 0
+    best_model = None
+
     for name, (model, params) in models.items():
-        train_log_model(model, params, X_train, y_train, X_val, y_val, name , output_dir)
+        trained_model = train_log_model(model, params, X_train, y_train, X_val, y_val, name, output_dir)
+        y_pred = trained_model.predict(X_val)
+        acc = accuracy_score(y_val, y_pred)
+        if acc > best_acc:
+            best_acc = acc
+            best_model = trained_model
+
+    # Save the best model and label encoder for serving
+    joblib.dump(best_model, os.path.join(output_dir, "model.pkl"))
+    joblib.dump(le, os.path.join(output_dir, "label_encoder.joblib"))
+    print("Best model and label encoder saved to output directory.")
 
 if __name__ == "__main__":
     main()
+
 
 
