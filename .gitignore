@@ -1,0 +1,22 @@
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environment
+venv-research/
+venv/
+
+# Ignore MLflow and model artifacts
+mlartifacts/
+mlruns/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.DS_Store
+
+# Ignore environment files
+.env
