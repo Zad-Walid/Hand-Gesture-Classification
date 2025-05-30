@@ -112,7 +112,8 @@ After training, the following table summarizes the validation performance of eac
 
 **Model Comparison Graph:**
 
-![Model Comparison](assets/model_comparison.png)
+![comparison](https://github.com/user-attachments/assets/1f87e37b-728b-46c5-9045-ad391be60b00)
+
 
 ---
 
